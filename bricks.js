@@ -1,18 +1,11 @@
-function bordermouse(id) {
-	if (id.style.fill == "white") {
-		id.style.fill = "grey";
-	}
-}
-function borderunmouse(id) {
-	if (id.style.fill == "grey") {
-		id.style.fill = "white";
-	}
-}
 function borderclick(id) {
-	if (id.style.fill == "black") {
-		id.style.fill = "white";
-	} else {
-		id.style.fill = "black";
+	if (id.classList.contains('unclicked')) {
+		id.classList.add('clicked');
+		id.classList.remove('unclicked');
+	}
+	else {
+		id.classList.add('unclicked');
+		id.classList.remove('clicked');
 	}
 
 } 

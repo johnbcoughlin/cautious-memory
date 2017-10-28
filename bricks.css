@@ -1,0 +1,15 @@
+.clicked {
+	fill: black;
+}
+
+.unclicked {
+	fill: white;
+}
+
+.unclicked:hover {
+	fill: gray;
+}
+#brick {
+	fill: rgb(192,75,75);
+}
+
