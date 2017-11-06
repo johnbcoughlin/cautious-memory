@@ -4,6 +4,12 @@
 .unclicked {
 	fill: white;
 }
+.xed {
+	opacity: 0;
+}
+.off {
+	fill: white;
+}
 .unclicked:hover {
 	fill: gray;
 }
