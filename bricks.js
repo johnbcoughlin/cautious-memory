@@ -1,45 +1,43 @@
-var brickwidth = 100;
-var brickheight = 50;
-var mortar = 10;
-var unitlength = brickwidth + mortar;
-var unitheight = brickheight + mortar;
-var halfunit = unitlength / 2;
-var horizmortarlength = (brickwidth - mortar)/2;
+const brickwidth = 100;
+const brickheight = 50;
+const mortar = 10;
+const unitlength = brickwidth + mortar;
+const unitheight = brickheight + mortar;
+const halfunit = unitlength / 2;
+const horizmortarlength = (brickwidth - mortar)/2;
 
-var nColumns = 9;
-var nRows = 9;
+const nColumns = 5;
+const nRows = 7;
 
-var ULcorner = ['H1-1', 'H2-1', 'H1-2', 'V1-1'];
-var URcorner = ['H' + String(2 * nColumns - 1) + '-1', 'H' + String(2 * nColumns) + '-1', 'H' + String(2 * nColumns) + '-2', 'V' + String(nColumns + 1) + '-1'];
-var LLcorner = ['H1-' + String(nRows + 1), 'H2-' + String(nRows + 1), 'H1-' + String(nRows), 'V1-' + String(nRows)];
-var LRcorner = ['H' + String(2 * nColumns - 1) + '-' + String(nRows + 1), 'H' + String(2 * nColumns) + '-' + String(nRows + 1), 'H' + String(2 * nColumns) + '-' + String(nRows), 'V' + String(nColumns + 1) + '-' + String(nRows)];
-var corners = [ULcorner, URcorner, LLcorner, LRcorner];
+/* creating arrays of mortor ids located on the outside of each corner brick */
+const ULcorner = ['H1-1', 'H2-1', 'H1-2', 'V1-1'];
+const URcorner = ['H' + (2 * nColumns - 1) + '-1', 'H' + 2 * nColumns + '-1', 'H' + 2 * nColumns + '-2', 'V' + (nColumns + 1) + '-1'];
+const LLcorner = ['H1-' + (nRows + 1), 'H2-' + (nRows + 1), 'H1-' + nRows, 'V1-' + nRows];
+const LRcorner = ['H' + (2 * nColumns - 1) + '-' + (nRows + 1), 'H' + 2 * nColumns + '-' + (nRows + 1), 'H' + 2 * nColumns + '-' + nRows, 'V' + (nColumns + 1) + '-' + nRows];
+const corners = [ULcorner, URcorner, LLcorner, LRcorner];
 
-var svgns = "http://www.w3.org/2000/svg";
+const svgns = "http://www.w3.org/2000/svg";
 
-function borderclick(id) {
-	var clickclass = id.getAttributeNS(null, 'class');
-	var clickid = id.getAttributeNS(null, 'id');
-	var xval = clickid.slice(1, clickid.indexOf('-'));
-	var yval = clickid.slice(clickid.indexOf('-') + 1);
+function borderclick(e) {
+	const clickclass = e.getAttributeNS(null, 'class');
+	const clickid = e.getAttributeNS(null, 'id');
+	const xval = clickid.slice(1, clickid.indexOf('-'));
+	const yval = clickid.slice(clickid.indexOf('-') + 1);
 
 	if (clickclass === 'unclicked') {
-		id.setAttributeNS(null, 'class', 'clicked');
-
-	}
-	else if (clickclass === 'clicked') {
-		id.setAttributeNS(null, 'class', 'xed');
-	}
-	else {
-		id.setAttributeNS(null, 'class', 'unclicked');
+		e.setAttributeNS(null, 'class', 'clicked');
+	} else if (clickclass === 'clicked') {
+		e.setAttributeNS(null, 'class', 'xed');
+	} else {
+		e.setAttributeNS(null, 'class', 'unclicked');
 	}
 
-	var newclickclass = id.getAttributeNS(null, 'class');
+	const newclickclass = e.getAttributeNS(null, 'class');
 
-	/* checking if clicked element is on a corner and setting other elements on the corner to same class if true */
-	for (i = 0; i < 4; i++) {
+	/* checking if clicked element is on the outside of a corner brick and setting other elements on the corner to same class if true */
+	for (let i = 0; i < 4; i++) {
 		if (corners[i].includes(clickid)) {
-			for (j = 0; j < 4; j++) {
+			for (let j = 0; j < 4; j++) {
 				document.getElementById(corners[i][j]).setAttributeNS(null, 'class', newclickclass);
 			}
 		}
@@ -71,11 +69,11 @@ function borderclick(id) {
 } 
 
 function drawbricks(nColumns, nRows) {
-	for (var y = 0; y < nRows; y++) {
-		for (var x = 0; x < (nColumns - y % 2); x++) {
-			var rect = document.createElementNS(svgns, 'rect');
-			var xcoord = x + 1;
-			var ycoord = y + 1;
+	for (let y = 0; y < nRows; y++) {
+		for (let x = 0; x < (nColumns - y % 2); x++) {
+			const rect = document.createElementNS(svgns, 'rect');
+			const xcoord = x + 1;
+			const ycoord = y + 1;
 			rect.setAttributeNS(null, 'x', mortar + unitlength * x + halfunit * (y % 2));
 			rect.setAttributeNS(null, 'y', mortar + unitheight * y);
 			rect.setAttributeNS(null, 'height', brickheight);
@@ -89,11 +87,11 @@ function drawbricks(nColumns, nRows) {
 }
 
 function drawhorizmortar(nColumns, nRows) {
-	for (var y = 0; y < nRows + 1; y++) {
-		for (var x = 0; x < 2 * nColumns; x++) {
-			var rect = document.createElementNS(svgns, 'rect');
-			var xcoord = x + 1;
-			var ycoord = y + 1;
+	for (let y = 0; y < nRows + 1; y++) {
+		for (let x = 0; x < 2 * nColumns; x++) {
+			const rect = document.createElementNS(svgns, 'rect');
+			const xcoord = x + 1;
+			const ycoord = y + 1;
 			rect.setAttributeNS(null, 'x', mortar + halfunit * x);
 			rect.setAttributeNS(null, 'y', unitheight * y);
 			rect.setAttributeNS(null, 'height', mortar);
@@ -107,11 +105,11 @@ function drawhorizmortar(nColumns, nRows) {
 }
 
 function drawvertmortar(nColumns, nRows) {
-	for (var y = 0; y < nRows; y++) {
-		for (var x = 0; x < (nColumns + 1 - y % 2); x++) {
-			var rect = document.createElementNS(svgns, 'rect');
-			var xcoord = x + 1;
-			var ycoord = y + 1;
+	for (let y = 0; y < nRows; y++) {
+		for (let x = 0; x < (nColumns + 1 - y % 2); x++) {
+			const rect = document.createElementNS(svgns, 'rect');
+			const xcoord = x + 1;
+			const ycoord = y + 1;
 			rect.setAttributeNS(null, 'x', unitlength * x + halfunit * (y % 2));
 			rect.setAttributeNS(null, 'y', mortar + unitheight * y);
 			rect.setAttributeNS(null, 'height', brickheight);
@@ -124,61 +122,50 @@ function drawvertmortar(nColumns, nRows) {
 	}
 }
 
-function drawxs(nColumns, nRows) {
-	/* drawing xs under horizontal mortar */
-	for (var y = 0; y < nRows + 1; y++) {
-		for (var x = 0; x < 2 * nColumns; x++) {
-			var line1 = document.createElementNS(svgns, 'line');
-			line1.setAttributeNS(null, 'x1', unitlength / 4 + halfunit * x + 1);
-			line1.setAttributeNS(null, 'y1', unitheight * y + 1);
-			line1.setAttributeNS(null, 'x2', mortar + unitlength / 4 + halfunit * x - 1);
-			line1.setAttributeNS(null, 'y2', mortar + unitheight * y - 1);
-			line1.setAttributeNS(null, 'stroke-width', 2);
-			line1.setAttributeNS(null, 'stroke', 'black');
-			
-			var line2 = document.createElementNS(svgns, 'line');
-			line2.setAttributeNS(null, 'x1', mortar + unitlength / 4 + halfunit * x - 1);
-			line2.setAttributeNS(null, 'y1', unitheight * y + 1);
-			line2.setAttributeNS(null, 'x2', unitlength / 4 + halfunit * x + 1);
-			line2.setAttributeNS(null, 'y2', mortar + unitheight * y - 1);
-			line2.setAttributeNS(null, 'stroke-width', 2);
-			line2.setAttributeNS(null, 'stroke', 'black');
+function drawX(xcoord, ycoord) {
+	const line1 = document.createElementNS(svgns, 'line');
+	line1.setAttributeNS(null, 'x1', xcoord + 1);
+	line1.setAttributeNS(null, 'y1', ycoord + 1);
+	line1.setAttributeNS(null, 'x2', xcoord + mortar - 1);
+	line1.setAttributeNS(null, 'y2', ycoord + mortar - 1);
+	line1.setAttributeNS(null, 'stroke-width', 2);
+	line1.setAttributeNS(null, 'stroke', 'black');
 
-			document.getElementById("canvas").appendChild(line1);
-			document.getElementById("canvas").appendChild(line2);
+	const line2 = document.createElementNS(svgns, 'line');
+	line2.setAttributeNS(null, 'x1', xcoord + mortar - 1);
+	line2.setAttributeNS(null, 'y1', ycoord + 1);
+	line2.setAttributeNS(null, 'x2', xcoord + 1);
+	line2.setAttributeNS(null, 'y2', ycoord + mortar - 1);
+	line2.setAttributeNS(null, 'stroke-width', 2);
+	line2.setAttributeNS(null, 'stroke', 'black');
+
+	document.getElementById("canvas").appendChild(line1);
+	document.getElementById("canvas").appendChild(line2);
+}
+
+function drawxundermortar(nColumns, nRows) {
+	for (let y = 0; y < nRows + 1; y++) {
+		for (let x = 0; x < 2 * nColumns; x++) {
+			let xcoord = unitlength / 4 + halfunit * x;
+			let ycoord = unitheight * y;
+			drawX(xcoord, ycoord);
 		}
 	}
-	/* drawing xs under vertical mortar */
-	for (var y = 0; y < nRows; y++) {
-		for (var x = 0; x < (nColumns + 1 - y % 2); x++) {
-			var line1 = document.createElementNS(svgns, 'line');
-			line1.setAttributeNS(null, 'x1', unitlength * x + halfunit * (y % 2) + 1);
-			line1.setAttributeNS(null, 'y1', unitheight / 2 + unitheight * y + 1);
-			line1.setAttributeNS(null, 'x2', mortar + unitlength * x + halfunit * (y % 2) - 1);
-			line1.setAttributeNS(null, 'y2', mortar + unitheight / 2 + unitheight * y - 1);
-			line1.setAttributeNS(null, 'stroke-width', 2);
-			line1.setAttributeNS(null, 'stroke', 'black');
-			
-			var line2 = document.createElementNS(svgns, 'line');
-			line2.setAttributeNS(null, 'x1', mortar + unitlength * x + halfunit * (y % 2) - 1);
-			line2.setAttributeNS(null, 'y1', unitheight / 2 + unitheight * y + 1);
-			line2.setAttributeNS(null, 'x2', unitlength * x + halfunit * (y % 2) + 1);
-			line2.setAttributeNS(null, 'y2', mortar + unitheight / 2 + unitheight * y - 1);
-			line2.setAttributeNS(null, 'stroke-width', 2);
-			line2.setAttributeNS(null, 'stroke', 'black');
-
-			document.getElementById("canvas").appendChild(line1);
-			document.getElementById("canvas").appendChild(line2);
+	for (let y = 0; y < nRows; y++) {
+		for (let x = 0; x < (nColumns + 1 - y % 2); x++) {
+			let xcoord = unitlength * x + halfunit * (y % 2);
+			let ycoord = unitheight / 2 + unitheight * y;
+			drawX(xcoord, ycoord);
 		}
 	}
 }
 
 function drawgaps(nColumns, nRows) {
-	for (var y = 0; y < nRows + 1; y++) {
-		for (var x = 0; x < 2 * nColumns + 1; x++) {
-			var rect = document.createElementNS(svgns, 'rect');
-			var xcoord = x + 1;
-			var ycoord = y + 1;
+	for (let y = 0; y < nRows + 1; y++) {
+		for (let x = 0; x < 2 * nColumns + 1; x++) {
+			const rect = document.createElementNS(svgns, 'rect');
+			const xcoord = x + 1;
+			const ycoord = y + 1;
 			rect.setAttributeNS(null, 'x', halfunit * x);
 			rect.setAttributeNS(null, 'y', unitheight * y);
 			rect.setAttributeNS(null, 'height', mortar);
@@ -195,7 +182,7 @@ function drawpuzzle(nColumns, nRows) {
 		console.error("Height of brick wall must be odd");
 		return;
 	}
-	drawxs(nColumns, nRows);
+	drawxundermortar(nColumns, nRows);
 	drawbricks(nColumns, nRows);
 	drawhorizmortar(nColumns, nRows);
 	drawvertmortar(nColumns, nRows);
