@@ -6,8 +6,8 @@ const unitheight = brickheight + mortar;
 const halfunit = unitlength / 2;
 const horizmortarlength = (brickwidth - mortar)/2;
 
-const nColumns = 5;
-const nRows = 7;
+const nColumns = 4;
+const nRows = 3;
 
 /* creating arrays of mortor ids located on the outside of each corner brick */
 const ULcorner = ['H1-1', 'H2-1', 'H1-2', 'V1-1'];
@@ -190,3 +190,22 @@ function drawpuzzle(nColumns, nRows) {
 }
 
 drawpuzzle(nColumns, nRows);
+
+const puzzle1 = {'B1-1': 3, 'B4-1': 1, 'B2-2': 3, 'B1-3': 3, 'B4-3': 4};
+
+function drawpuzzletext(puzzle) {
+	for (let key in puzzle) {
+		const xcoord = parseInt(document.getElementById(key).getAttributeNS(null, 'x')) + brickwidth / 2;
+		const ycoord = parseInt(document.getElementById(key).getAttributeNS(null, 'y')) + .75 * brickheight;
+		const clue = document.createElementNS(svgns, 'text');
+		clue.setAttributeNS(null, 'x', xcoord);
+		clue.setAttributeNS(null, 'y', ycoord);
+		clue.setAttributeNS(null, 'font-size', .75 * brickheight);
+		clue.setAttributeNS(null, 'text-anchor', 'middle');
+		clue.setAttributeNS(null, 'font-family', 'Helvetica');
+		clue.innerHTML = puzzle[key];
+		document.getElementById('canvas').appendChild(clue);
+	}
+}
+
+drawpuzzletext(puzzle1);
