@@ -18,6 +18,9 @@ const corners = [ULcorner, URcorner, LLcorner, LRcorner];
 
 const svgns = "http://www.w3.org/2000/svg";
 
+const puzzle1 = {'B1-1': 3, 'B4-1': 1, 'B2-2': 3, 'B1-3': 3, 'B4-3': 4};
+
+
 function borderclick(e) {
 	const clickclass = e.getAttributeNS(null, 'class');
 	const clickid = e.getAttributeNS(null, 'id');
@@ -189,10 +192,6 @@ function drawpuzzle(nColumns, nRows) {
 	drawgaps(nColumns, nRows)
 }
 
-drawpuzzle(nColumns, nRows);
-
-const puzzle1 = {'B1-1': 3, 'B4-1': 1, 'B2-2': 3, 'B1-3': 3, 'B4-3': 4};
-
 function drawpuzzletext(puzzle) {
 	for (let key in puzzle) {
 		const xcoord = parseInt(document.getElementById(key).getAttributeNS(null, 'x')) + brickwidth / 2;
@@ -200,12 +199,57 @@ function drawpuzzletext(puzzle) {
 		const clue = document.createElementNS(svgns, 'text');
 		clue.setAttributeNS(null, 'x', xcoord);
 		clue.setAttributeNS(null, 'y', ycoord);
+		clue.setAttributeNS(null, 'class', 'clue');
 		clue.setAttributeNS(null, 'font-size', .75 * brickheight);
-		clue.setAttributeNS(null, 'text-anchor', 'middle');
-		clue.setAttributeNS(null, 'font-family', 'Helvetica');
 		clue.innerHTML = puzzle[key];
-		document.getElementById('canvas').appendChild(clue);
+		document.getElementById('canvas').appendChild(clue); 
 	}
 }
+/* determines if the currently 'clicked' elements form one continuous loop with no stray elements */
+function isLoop() {
+	let clickedelems = Array.from(document.getElementsByClassName('clicked'));
+	if (clickedelems.length === 0) {return false;}
+	const firstelem = clickedelems[0];
+	clickedelems.splice(0, 1);
+	if (isContinuous(firstelem)) {
+		let previouselem = firstelem;
+		let currentelem = isContinuous(firstelem)[0];
+		while (currentelem != firstelem) {
+			if (isContinuous(currentelem)) {
+				let placeholder = previouselem;
+				previouselem = currentelem;
+				currentelem = isContinuous(currentelem)[0] === placeholder
+				? isContinuous(currentelem)[1]
+				: isContinuous(currentelem)[0];
+				clickedelems.splice(clickedelems.indexOf(previouselem), 1);
+			} else {return false;}
+		}
+		if (clickedelems.length === 0) {
+			return true;
+		} else {return false;}
+	} else {return false;}
+}
 
+/* determines if an element has exactly two neighbors, who are not neighbors to each other
+returns false is not continuous, returns the two neighbors if it is continuous */
+function isContinuous(e) {
+	if (e.getAttributeNS(null, 'class') != 'clicked') {return false;}
+	const elemid = e.getAttributeNS(null, 'id');
+	const elemneighbors = neighbors(elemid);
+	let clickedneighbors = [];
+	for (let i in elemneighbors) {
+		if (elemneighbors[i]) {
+			if (elemneighbors[i].getAttributeNS(null, 'class') === 'clicked') {
+				clickedneighbors.push(elemneighbors[i]);
+			}
+		}
+	}
+	if (clickedneighbors.length === 2) {
+		if (neighbors(clickedneighbors[0].getAttributeNS(null, 'id')).indexOf(clickedneighbors[1] === -1)) {
+			return clickedneighbors;
+		}
+	} else {return false;}
+}
+
+drawpuzzle(nColumns, nRows);
 drawpuzzletext(puzzle1);
