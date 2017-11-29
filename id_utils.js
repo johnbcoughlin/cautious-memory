@@ -13,32 +13,32 @@ function neighbors(id) {
 
 function horizontalNeighbors(col, row) {
   const result = [
-    "H" + (col - 1) + "-" + row,
-    "H" + (col + 1) + "-" + row,
+    document.getElementById("H" + (col - 1) + "-" + row),
+    document.getElementById("H" + (col + 1) + "-" + row)
   ];
 
   if (row % 2 === 0) {
     if (col % 2 === 0) {
       result.push(
-          "V" + (col / 2 + 1) + "-" + (row - 1),
-          "V" + (col / 2) + "-" + row
+          document.getElementById("V" + (col / 2 + 1) + "-" + (row - 1)),
+          document.getElementById("V" + (col / 2) + "-" + row)
       );
     } else {
       result.push(
-          "V" + ((col + 1) / 2) + "-" + (row - 1),
-          "V" + ((col + 1) / 2) + "-" + row
+          document.getElementById("V" + ((col + 1) / 2) + "-" + (row - 1)),
+          document.getElementById("V" + ((col + 1) / 2) + "-" + row)
       )
     }
   } else {
     if (col % 2 === 0) {
       result.push(
-          "V" + (col / 2) + "-" + (row - 1),
-          "V" + ((col / 2) + 1) + "-" + row
+          document.getElementById("V" + (col / 2) + "-" + (row - 1)),
+          document.getElementById("V" + ((col / 2) + 1) + "-" + row)
       )
     } else {
       result.push(
-          "V" + ((col + 1) / 2) + "-" + (row - 1),
-          "V" + ((col + 1) / 2) + "-" + row
+          document.getElementById("V" + ((col + 1) / 2) + "-" + (row - 1)),
+          document.getElementById("V" + ((col + 1) / 2) + "-" + row)
       )
     }
   }
@@ -52,8 +52,8 @@ function verticalNeighbors(col, row) {
       : [col * 2 - 2, col * 2 - 1];
   return neighborCols.map((c) => {
     return [
-        "H" + c + "-" + row,
-        "H" + c + "-" + (row + 1),
+        document.getElementById("H" + c + "-" + row),
+        document.getElementById("H" + c + "-" + (row + 1)),
     ]
   }).reduce((a, b) => a.concat(b));
 }
