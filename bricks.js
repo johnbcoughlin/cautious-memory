@@ -207,27 +207,32 @@ function drawpuzzletext(puzzle) {
 }
 /* determines if the currently 'clicked' elements form one continuous loop with no stray elements */
 function isLoop() {
-	let clickedelems = Array.from(document.getElementsByClassName('clicked'));
-	if (clickedelems.length === 0) {return false;}
-	const firstelem = clickedelems[0];
-	clickedelems.splice(0, 1);
-	if (isContinuous(firstelem)) {
-		let previouselem = firstelem;
-		let currentelem = isContinuous(firstelem)[0];
-		while (currentelem != firstelem) {
-			if (isContinuous(currentelem)) {
-				let placeholder = previouselem;
-				previouselem = currentelem;
-				currentelem = isContinuous(currentelem)[0] === placeholder
-				? isContinuous(currentelem)[1]
-				: isContinuous(currentelem)[0];
-				clickedelems.splice(clickedelems.indexOf(previouselem), 1);
+	let clickedElems = Array.from(document.getElementsByClassName('clicked'));
+	if (clickedElems.length === 0) {return false;}
+	const firstElem = clickedElems[0];
+	clickedElems.shift();
+	if (isContinuous(firstElem)) {
+		let previousElem = firstElem;
+		let currentElem = isContinuous(firstElem)[0];
+		while (currentElem != firstElem) {
+			let neighborsPair = isContinuous(currentElem);
+			if (neighborsPair) {
+				let placeHolder = previousElem;
+				previousElem = currentElem;
+				currentElem = neighborsPair[0] === placeHolder
+				? neighborsPair[1]
+				: neighborsPair[0];
+				clickedElems.splice(clickedElems.indexOf(previousElem), 1);
 			} else {return false;}
 		}
-		if (clickedelems.length === 0) {
+		if (clickedElems.length === 0) {
 			return true;
-		} else {return false;}
-	} else {return false;}
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
 }
 
 /* determines if an element has exactly two neighbors, who are not neighbors to each other
@@ -235,20 +240,22 @@ returns false is not continuous, returns the two neighbors if it is continuous *
 function isContinuous(e) {
 	if (e.getAttributeNS(null, 'class') != 'clicked') {return false;}
 	const elemid = e.getAttributeNS(null, 'id');
-	const elemneighbors = neighbors(elemid);
-	let clickedneighbors = [];
-	for (let i in elemneighbors) {
-		if (elemneighbors[i]) {
-			if (elemneighbors[i].getAttributeNS(null, 'class') === 'clicked') {
-				clickedneighbors.push(elemneighbors[i]);
+	const elemNeighbors = neighbors(elemid);
+	let clickedNeighbors = [];
+	for (let i in elemNeighbors) {
+		if (elemNeighbors[i]) {
+			if (elemNeighbors[i].getAttributeNS(null, 'class') === 'clicked') {
+				clickedNeighbors.push(elemNeighbors[i]);
 			}
 		}
 	}
-	if (clickedneighbors.length === 2) {
-		if (neighbors(clickedneighbors[0].getAttributeNS(null, 'id')).indexOf(clickedneighbors[1] === -1)) {
-			return clickedneighbors;
+	if (clickedNeighbors.length === 2) {
+		if (neighbors(clickedNeighbors[0].getAttributeNS(null, 'id')).indexOf(clickedNeighbors[1]) === -1) {
+			return clickedNeighbors;
 		}
-	} else {return false;}
+	} else {
+		return false;
+	}
 }
 
 drawpuzzle(nColumns, nRows);
