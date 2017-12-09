@@ -24,8 +24,8 @@ const puzzle1 = {'B1-1': 3, 'B4-1': 1, 'B2-2': 3, 'B1-3': 3, 'B4-3': 4};
 function borderclick(e) {
 	const clickclass = e.getAttributeNS(null, 'class');
 	const clickid = e.getAttributeNS(null, 'id');
-	const xval = clickid.slice(1, clickid.indexOf('-'));
-	const yval = clickid.slice(clickid.indexOf('-') + 1);
+	const xval = parseInt(clickid.slice(1, clickid.indexOf('-')));
+	const yval = parseInt(clickid.slice(clickid.indexOf('-') + 1));
 
 	if (clickclass === 'unclicked') {
 		e.setAttributeNS(null, 'class', 'clicked');
@@ -46,28 +46,32 @@ function borderclick(e) {
 		}
 	}
 	/* same for top & bottom edges*/
-	if (clickid.charAt(0) === 'H' && (yval === '1' || yval === String(nRows + 1))) {
-		document.getElementById('H' + String(parseInt(xval) + 2 * (parseInt(xval) % 2) - 1) + '-' + yval).setAttributeNS(null, 'class', newclickclass);
+	if (clickid.charAt(0) === 'H' && (yval === 1 || yval === nRows + 1)) {
+		document.getElementById('H' + String(xval + 2 * (xval % 2) - 1) + '-' + yval).setAttributeNS(null, 'class', newclickclass);
 	} 
 	/* same for vertical mortar on left edge */
-	if (clickid.charAt(0) === 'V' && xval === '1' && yval % 2 === 1) {
+	if (clickid.charAt(0) === 'V' && xval === 1 && yval % 2 === 1) {
 		document.getElementById('H1-' + yval).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H1-' + String(parseInt(yval) + 1)).setAttributeNS(null, 'class', newclickclass);
+		document.getElementById('H1-' + String(yval + 1)).setAttributeNS(null, 'class', newclickclass);
 	}
 	/* and right edge */
-	if (clickid.charAt(0) === 'V' && xval === String(nColumns + 1) && yval % 2 === 1) {
+	if (clickid.charAt(0) === 'V' && xval === nColumns + 1 && yval % 2 === 1) {
 		document.getElementById('H' + String(2 * nColumns) + '-' + yval).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H' + String(2 * nColumns) + '-' + String(parseInt(yval) + 1)).setAttributeNS(null, 'class', newclickclass);
+		document.getElementById('H' + String(2 * nColumns) + '-' + String(yval + 1)).setAttributeNS(null, 'class', newclickclass);
 	}
 	/* same for horizontal mortar on left edge */
-	if (clickid.charAt(0) === 'H' && xval === '1') {
-		document.getElementById('V1-' + String(parseInt(yval) + (parseInt(yval) % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H1-' + String(parseInt(yval) + 2 * (parseInt(yval) % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
+	if (clickid.charAt(0) === 'H' && xval === 1) {
+		document.getElementById('V1-' + String(yval + (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
+		document.getElementById('H1-' + String(yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
 	}
 	/* and right edge */
-	if (clickid.charAt(0) === 'H' && xval === String(2 * nColumns)) {
-		document.getElementById('V' + String(nColumns + 1) + '-' + String(parseInt(yval) + (parseInt(yval) % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H' + String(2 * nColumns) + '-' + String(parseInt(yval) + 2 * (parseInt(yval) % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
+	if (clickid.charAt(0) === 'H' && xval === 2 * nColumns) {
+		document.getElementById('V' + String(nColumns + 1) + '-' + String(yval + (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
+		document.getElementById('H' + String(2 * nColumns) + '-' + String(yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
+	}
+
+	if (isLoop() && cluesSatisfied(puzzle1)) {
+		window.alert('You did it!!!!');
 	}
 } 
 
@@ -256,6 +260,51 @@ function isContinuous(e) {
 	} else {
 		return false;
 	}
+}
+
+function cluesSatisfied(puzzle) {
+	let weGood = true;
+	for (let key in puzzle) {
+		const mortarNeighbors = surroundingMortar(key);
+		let clickedSides = 0;
+		if (mortarNeighbors[0].getAttributeNS(null, 'class') === 'clicked' || mortarNeighbors[1].getAttributeNS(null, 'class') === 'clicked') {
+			clickedSides++;
+		}
+		if (mortarNeighbors[2].getAttributeNS(null, 'class') === 'clicked' || mortarNeighbors[3].getAttributeNS(null, 'class') === 'clicked') {
+			clickedSides++;
+		}
+		if (mortarNeighbors[4].getAttributeNS(null, 'class') === 'clicked') {
+			clickedSides++;
+		}
+		if (mortarNeighbors[5].getAttributeNS(null, 'class') === 'clicked') {
+			clickedSides++;
+		}
+		if (clickedSides != puzzle[key]) {
+			weGood = false;
+		}
+	}
+	return weGood;
+}
+function surroundingMortar(id) {
+	const elem = document.getElementById(id);
+	if (id.charAt(0) != 'B') {
+		console.error('element is not a brick');
+		return false;
+	}
+	if (!elem) {
+		console.error('element does not exist');
+		return false;
+	}
+	const xval = parseInt(id.slice(1, id.indexOf('-')));
+	const yval = parseInt(id.slice(id.indexOf('-') + 1));
+	const result = [
+		document.getElementById('H' + (2 * xval - yval % 2) + '-' + yval), 
+		document.getElementById('H' + (2 * xval + 1 - yval % 2) + '-' + yval), 
+		document.getElementById('H' + (2 * xval - yval % 2) + '-' + (yval + 1)),
+		document.getElementById('H' + (2 * xval + 1 - yval % 2) + '-' + (yval + 1)), 
+		document.getElementById('V' + xval + '-' + yval), 
+		document.getElementById('V' + (xval + 1) + '-' + yval)];
+	return result;
 }
 
 drawpuzzle(nColumns, nRows);
