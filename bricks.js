@@ -24,56 +24,81 @@ const puzzle1 = {'B1-1': 3, 'B4-1': 1, 'B2-2': 3, 'B1-3': 3, 'B4-3': 4};
 function borderclick(e) {
 	const clickclass = e.getAttributeNS(null, 'class');
 	const clickid = e.getAttributeNS(null, 'id');
+	const type = clickid.charAt(0);
 	const xval = parseInt(clickid.slice(1, clickid.indexOf('-')));
 	const yval = parseInt(clickid.slice(clickid.indexOf('-') + 1));
 
-	if (clickclass === 'unclicked') {
-		e.setAttributeNS(null, 'class', 'clicked');
-	} else if (clickclass === 'clicked') {
-		e.setAttributeNS(null, 'class', 'xed');
-	} else {
-		e.setAttributeNS(null, 'class', 'unclicked');
-	}
+	rotateClass(e, clickclass);
 
 	const newclickclass = e.getAttributeNS(null, 'class');
 
-	/* checking if clicked element is on the outside of a corner brick and setting other elements on the corner to same class if true */
-	for (let i = 0; i < 4; i++) {
-		if (corners[i].includes(clickid)) {
-			for (let j = 0; j < 4; j++) {
-				document.getElementById(corners[i][j]).setAttributeNS(null, 'class', newclickclass);
-			}
-		}
-	}
-	/* same for top & bottom edges*/
-	if (clickid.charAt(0) === 'H' && (yval === 1 || yval === nRows + 1)) {
-		document.getElementById('H' + String(xval + 2 * (xval % 2) - 1) + '-' + yval).setAttributeNS(null, 'class', newclickclass);
-	} 
-	/* same for vertical mortar on left edge */
-	if (clickid.charAt(0) === 'V' && xval === 1 && yval % 2 === 1) {
-		document.getElementById('H1-' + yval).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H1-' + String(yval + 1)).setAttributeNS(null, 'class', newclickclass);
-	}
-	/* and right edge */
-	if (clickid.charAt(0) === 'V' && xval === nColumns + 1 && yval % 2 === 1) {
-		document.getElementById('H' + String(2 * nColumns) + '-' + yval).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H' + String(2 * nColumns) + '-' + String(yval + 1)).setAttributeNS(null, 'class', newclickclass);
-	}
-	/* same for horizontal mortar on left edge */
-	if (clickid.charAt(0) === 'H' && xval === 1) {
-		document.getElementById('V1-' + String(yval + (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H1-' + String(yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-	}
-	/* and right edge */
-	if (clickid.charAt(0) === 'H' && xval === 2 * nColumns) {
-		document.getElementById('V' + String(nColumns + 1) + '-' + String(yval + (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-		document.getElementById('H' + String(2 * nColumns) + '-' + String(yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', newclickclass);
-	}
+	adjustCorners(clickid, newclickclass);
+	adjustEdges(type, xval, yval, newclickclass);
+	adjustGaps(e);
+
 
 	if (isLoop() && cluesSatisfied(puzzle1)) {
 		window.alert('You did it!!!!');
 	}
 } 
+
+function rotateClass(e, className) {
+	if (className === 'unclicked') {
+		e.setAttributeNS(null, 'class', 'clicked');
+	} else if (className === 'clicked') {
+		e.setAttributeNS(null, 'class', 'xed');
+	} else {
+		e.setAttributeNS(null, 'class', 'unclicked');
+	}
+}
+
+/* checking if clicked element is on the outside of a corner brick and setting other elements on the corner to same class if true */
+function adjustCorners(id, className) {
+	for (let i = 0; i < 4; i++) {
+		if (corners[i].includes(id)) {
+			for (let j = 0; j < 4; j++) {
+				document.getElementById(corners[i][j]).setAttributeNS(null, 'class', className);
+				adjustGaps(document.getElementById(corners[i][j]));
+			}
+		}
+	}
+}
+
+function adjustEdges(type, xval, yval, className) {
+	/* top & bottom edges */
+	if (type === 'H' && (yval === 1 || yval === nRows + 1)) {
+		document.getElementById('H' + (xval + 2 * (xval % 2) - 1) + '-' + yval).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H' + (xval + 2 * (xval % 2) - 1) + '-' + yval));
+	} 
+	/* vertical mortar on left edge */
+	if (type === 'V' && xval === 1 && yval % 2 === 1) {
+		document.getElementById('H1-' + yval).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H1-' + yval));
+		document.getElementById('H1-' + (yval + 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H1-' + (yval + 1)));
+	}
+	/* vertical mortar on right edge */
+	if (type === 'V' && xval === nColumns + 1 && yval % 2 === 1) {
+		document.getElementById('H' + (2 * nColumns) + '-' + yval).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H' + (2 * nColumns) + '-' + yval));
+		document.getElementById('H' + (2 * nColumns) + '-' + (yval + 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H' + (2 * nColumns) + '-' + (yval + 1)));
+	}
+	/* horizontal mortar on left edge */
+	if (type === 'H' && xval === 1) {
+		document.getElementById('V1-' + (yval + (yval % 2) - 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('V1-' + (yval + (yval % 2) - 1)));
+		document.getElementById('H1-' + (yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H1-' + (yval + 2 * (yval % 2) - 1)));
+	}
+	/* horizontal mortar on right edge */
+	if (type === 'H' && xval === 2 * nColumns) {
+		document.getElementById('V' + (nColumns + 1) + '-' + (yval + (yval % 2) - 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('V' + (nColumns + 1) + '-' + (yval + (yval % 2) - 1)));
+		document.getElementById('H' + (2 * nColumns) + '-' + (yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', className);
+		adjustGaps(document.getElementById('H' + (2 * nColumns) + '-' + (yval + 2 * (yval % 2) - 1)));
+	}
+}
 
 function drawbricks(nColumns, nRows) {
 	for (let y = 0; y < nRows; y++) {
@@ -303,8 +328,59 @@ function surroundingMortar(id) {
 		document.getElementById('H' + (2 * xval - yval % 2) + '-' + (yval + 1)),
 		document.getElementById('H' + (2 * xval + 1 - yval % 2) + '-' + (yval + 1)), 
 		document.getElementById('V' + xval + '-' + yval), 
-		document.getElementById('V' + (xval + 1) + '-' + yval)];
+		document.getElementById('V' + (xval + 1) + '-' + yval)
+		];
 	return result;
+}
+
+function gapNeighbors(id) {
+	const xval = parseInt(id.slice(1, id.indexOf('-')));
+	const yval = parseInt(id.slice(id.indexOf('-')  + 1));
+	const result = [
+		document.getElementById('H' + xval + '-' + yval), 
+		document.getElementById('H' + (xval - 1) + '-' + yval), 
+		document.getElementById('V' + ((xval + xval % 2) / 2) + '-' + (yval - (Math.abs(xval - yval) % 2)))
+	];
+	return result;
+} 
+
+function mortarNeighborGaps(id) {
+	const xval = parseInt(id.slice(1, id.indexOf('-')));
+	const yval = parseInt(id.slice(id.indexOf('-')  + 1));
+	const result = [];
+	if (id.charAt(0) === 'H') {
+		result.push(document.getElementById('G' + xval + '-' + yval));
+		result.push(document.getElementById('G' + (xval + 1) + '-' + yval));
+	} else {
+		result.push(document.getElementById('G' + ((2 * xval - 1) + (1 - yval % 2)) + '-' + yval));
+		result.push(document.getElementById('G' + ((2 * xval - 1) + (1 - yval % 2)) + '-' + (yval + 1)));
+	}
+	return result;
+}
+
+function adjustGaps(elem) {
+	const elemid = elem.getAttributeNS(null, 'id');
+	const adjacentGaps = mortarNeighborGaps(elemid);
+	for (let i in adjacentGaps) {
+		let gap = adjacentGaps[i];
+		let gapid = gap.getAttributeNS(null, 'id');
+		let clickedcount = 0;
+		for (let i in gapNeighbors(gapid)) {
+			let currentmortar = gapNeighbors(gapid)[i];
+			if (currentmortar) {
+				if (currentmortar.getAttributeNS(null, 'class') === 'clicked') {
+					clickedcount++;
+				}
+			}
+		}
+		if (clickedcount === 0 || clickedcount === 1) {
+			gap.setAttributeNS(null, 'class', 'off');
+		} else if (clickedcount === 2) {
+			gap.setAttributeNS(null, 'class', 'on');
+		} else {
+			gap.setAttributeNS(null, 'class', 'wrong');
+		}
+	}
 }
 
 drawpuzzle(nColumns, nRows);

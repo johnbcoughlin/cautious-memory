@@ -10,6 +10,12 @@
 .off {
 	fill: white;
 }
+.on {
+	fill: black;
+}
+.wrong {
+	fill: red;
+}
 .unclicked:hover {
 	fill: gray;
 }
