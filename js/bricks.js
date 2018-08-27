@@ -38,7 +38,7 @@ function borderclick(e) {
 
 
 	if (isLoop() && cluesSatisfied(puzzle1)) {
-		window.alert('You did it!!!!');
+		youDidIt()
 	}
 } 
 
@@ -98,6 +98,14 @@ function adjustEdges(type, xval, yval, className) {
 		document.getElementById('H' + (2 * nColumns) + '-' + (yval + 2 * (yval % 2) - 1)).setAttributeNS(null, 'class', className);
 		adjustGaps(document.getElementById('H' + (2 * nColumns) + '-' + (yval + 2 * (yval % 2) - 1)));
 	}
+}
+
+function youDidIt() {
+	let bricklist = Array.from(document.getElementsByClassName('brick'));
+		for (let i = 0; i < bricklist.length; i++) {
+			bricklist[i].setAttributeNS(null, 'style', 'fill:#DAA520');
+		}
+	document.getElementById('success').innerHTML = "Success! </br> <a href='puzzles.html'>Click here</a> to do more puzzles";
 }
 
 function drawbricks(nColumns, nRows) {
@@ -219,6 +227,7 @@ function drawpuzzle(nColumns, nRows) {
 	drawhorizmortar(nColumns, nRows);
 	drawvertmortar(nColumns, nRows);
 	drawgaps(nColumns, nRows)
+	setSVGDimensions(nColumns, nRows)
 }
 
 function drawpuzzletext(puzzle) {
@@ -381,6 +390,10 @@ function adjustGaps(elem) {
 			gap.setAttributeNS(null, 'class', 'wrong');
 		}
 	}
+}
+
+function setSVGDimensions(nColumns, nRows) {
+	document.getElementById("canvas").setAttributeNS(null, 'style', 'width:' + (brickwidth * nColumns + mortar * (nColumns + 1)) + ';height:' + (brickheight * nRows + mortar * (nRows + 1)));
 }
 
 drawpuzzle(nColumns, nRows);

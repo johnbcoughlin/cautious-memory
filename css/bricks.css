@@ -1,23 +1,30 @@
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+	margin: 20px;
+}
 .clicked {
-	fill: black;
+	fill: #000;
 }
 .unclicked {
-	fill: white;
+	fill: #eee;
 }
 .xed {
 	opacity: 0;
 }
 .off {
-	fill: white;
+	fill: #eee;
 }
 .on {
-	fill: black;
+	fill: #000;
 }
 .wrong {
-	fill: red;
+	fill: #f00;
 }
 .unclicked:hover {
-	fill: gray;
+	fill: #777;
 }
 .brick {
 	fill: rgb(192,75,75);
